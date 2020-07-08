@@ -7,11 +7,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.instagramclone.Post;
 import com.example.instagramclone.PostsAdapter;
@@ -23,12 +26,15 @@ import com.parse.ParseQuery;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.parse.Parse.getApplicationContext;
+
 public class PostsFragment extends Fragment {
 
     public static final String TAG = "PostsFragment";
     private RecyclerView postsRecyclerView;
     protected PostsAdapter adapter;
     protected List<Post> allPosts;
+    SwipeRefreshLayout swipeLayout;
 
     public PostsFragment() {
         // Required empty public constructor
@@ -53,6 +59,32 @@ public class PostsFragment extends Fragment {
         // set the layout manager on the recycler view
         postsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         queryPosts();
+        // Getting SwipeContainerLayout
+        swipeLayout = view.findViewById(R.id.swipeContainer);
+        // Adding Listener
+        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code here
+                queryPosts();
+                Toast.makeText(getApplicationContext(), "Works!", Toast.LENGTH_LONG).show();
+                // To keep animation for 4 seconds
+                new Handler().postDelayed(new Runnable() {
+                    @Override public void run() {
+                        // Stop animation (This will be after 3 seconds)
+                        swipeLayout.setRefreshing(false);
+                    }
+                }, 4000); // Delay in millis
+            }
+        });
+
+        // Scheme colors for animation
+        swipeLayout.setColorSchemeColors(
+                getResources().getColor(android.R.color.holo_blue_bright),
+                getResources().getColor(android.R.color.holo_green_light),
+                getResources().getColor(android.R.color.holo_orange_light),
+                getResources().getColor(android.R.color.holo_red_light)
+        );
     }
 
     protected void queryPosts() {
@@ -80,8 +112,8 @@ public class PostsFragment extends Fragment {
                 }
 
                 // save received posts to list and notify adapter of new data
-                allPosts.addAll(posts);
-                adapter.notifyDataSetChanged();
+                adapter.clear();
+                adapter.addAll(posts);
             }
         });
     }
