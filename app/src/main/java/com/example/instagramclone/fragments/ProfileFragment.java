@@ -39,8 +39,8 @@ public class ProfileFragment extends PostsFragment {
                 }
 
                 // save received posts to list and notify adapter of new data
-                allPosts.addAll(posts);
-                adapter.notifyDataSetChanged();
+                adapter.clear();
+                adapter.addAll(posts);
             }
         });
     }

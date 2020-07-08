@@ -111,7 +111,7 @@ public class PostsFragment extends Fragment {
                     Log.i(TAG, "Post: " + post.getDescription() + ", username: " + post.getUser().getUsername());
                 }
 
-                // save received posts to list and notify adapter of new data
+                // update adapter with posts list
                 adapter.clear();
                 adapter.addAll(posts);
             }
