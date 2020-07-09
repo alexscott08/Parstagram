@@ -18,6 +18,8 @@ import com.parse.ParseFile;
 
 import org.parceler.Parcels;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> {
@@ -63,18 +65,23 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         private TextView usernameTextView;
         private ImageView imgView;
         private TextView descriptionTextView;
+        private TextView timestampText;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             usernameTextView = itemView.findViewById(R.id.usernameTextView);
             imgView = itemView.findViewById(R.id.imgView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
+            timestampText = itemView.findViewById(R.id.timestampText);
         }
 
         public void bind(final Post post) {
             // Bind the post data to the view elements
             descriptionTextView.setText(post.getDescription());
             usernameTextView.setText(post.getUser().getUsername());
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+            final String strDate = dateFormat.format(post.getCreatedAt());
+            timestampText.setText(strDate);
             final ParseFile image = post.getImage();
             if (image != null) {
                 Glide.with(context).load(image.getUrl()).into(imgView);
@@ -83,9 +90,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(context, PostDetailsActivity.class);
-                    intent.putExtra("KEY_DESCRIPTION", post.KEY_DESCRIPTION);
-                    intent.putExtra("KEY_CREATED_KEY", post.KEY_CREATED_KEY);
-                    intent.putExtra("KEY_USER", post.KEY_USER);
+                    intent.putExtra("KEY_DESCRIPTION", post.getDescription());
+                    intent.putExtra("KEY_CREATED_KEY", strDate);
+                    intent.putExtra("KEY_USER", post.getUser().getUsername());
                     intent.putExtra("KEY_IMAGE", Parcels.wrap(image));
                     context.startActivity(intent);
                 }
