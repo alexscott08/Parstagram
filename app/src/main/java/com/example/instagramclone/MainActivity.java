@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()) {
                     case R.id.action_home:
                         fragment = new PostsFragment();
+
                         break;
                     case R.id.action_compose:
                         fragment = new ComposeFragment();
