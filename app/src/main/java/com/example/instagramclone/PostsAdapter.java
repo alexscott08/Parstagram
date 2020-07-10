@@ -15,13 +15,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.parse.Parse;
-import com.parse.ParseException;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import org.parceler.Parcels;
 
@@ -74,6 +70,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         private TextView descriptionTextView;
         private TextView timestampText;
         private ImageButton heartImgBtn;
+        private ImageView profileImgView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -82,6 +79,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
             timestampText = itemView.findViewById(R.id.timestampText);
             heartImgBtn = itemView.findViewById(R.id.heartImgBtn);
+            profileImgView = itemView.findViewById(R.id.profileImgView);
         }
 
         public void bind(final Post post) {
@@ -94,6 +92,18 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             final ParseFile image = post.getImage();
             if (image != null) {
                 Glide.with(context).load(image.getUrl()).into(imgView);
+            }
+            final ParseFile profilePic = ParseUser.getCurrentUser().getParseFile("profilePic");
+            if (profilePic != null) {
+                GlideApp.with(context)
+                        .load(profilePic.getUrl())
+                        .transform(new CircleCrop())
+                        .into(profileImgView);
+            } else {
+                GlideApp.with(context)
+                        .load(R.drawable.instagram_user_filled_24)
+                        .transform(new CircleCrop())
+                        .into(profileImgView);
             }
             imgView.setOnClickListener(new View.OnClickListener() {
                 @Override
