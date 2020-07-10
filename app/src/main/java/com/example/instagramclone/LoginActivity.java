@@ -36,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         loginBtn = findViewById(R.id.loginBtn);
         signUpBtn = findViewById(R.id.signUpBtn);
 
+        // Listener to log in user
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -46,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        // Listener to create new account and log in user
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void signUpUser(String username, String password) {
         Log.i(TAG, "Attempting to sign up user " + username);
-        // Navigates to main activity if login is successful
+        // Navigates to main activity if signup and login is successful
         ParseUser newUser = new ParseUser();
         newUser.setUsername(username);
         newUser.setPassword(password);

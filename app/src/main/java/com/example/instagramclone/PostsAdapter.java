@@ -7,6 +7,7 @@ import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,7 +15,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.parse.Parse;
+import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseRelation;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.parceler.Parcels;
 
@@ -66,6 +73,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         private ImageView imgView;
         private TextView descriptionTextView;
         private TextView timestampText;
+        private ImageButton heartImgBtn;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -73,13 +81,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             imgView = itemView.findViewById(R.id.imgView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
             timestampText = itemView.findViewById(R.id.timestampText);
+            heartImgBtn = itemView.findViewById(R.id.heartImgBtn);
         }
 
         public void bind(final Post post) {
             // Bind the post data to the view elements
             descriptionTextView.setText(post.getDescription());
             usernameTextView.setText(post.getUser().getUsername());
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy hh:mm");
             final String strDate = dateFormat.format(post.getCreatedAt());
             timestampText.setText(strDate);
             final ParseFile image = post.getImage();
@@ -97,6 +106,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                     context.startActivity(intent);
                 }
             });
+//            heartImgBtn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    heartImgBtn.setImageResource(R.drawable.ufi_heart_active);
+//                    final ParseObject likes = new ParseObject("likes");
+//                    final ParseUser user = ParseUser.getCurrentUser();
+//                    likes.put("likes", post);
+//                    likes.saveInBackground(new SaveCallba
         }
     }
 }
