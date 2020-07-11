@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:backgroundTint="#FFFFFF"
     tools:context=".PostDetailsActivity">
 
     <ImageView
@@ -20,12 +22,16 @@
 
     <TextView
         android:id="@+id/usernameTextView"
-        android:layout_width="match_parent"
-        android:layout_height="26dp"
+        android:layout_width="365dp"
+        android:layout_height="27dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:paddingLeft="5dp"
         android:paddingTop="5dp"
+        android:textColor="#000000"
         android:textSize="20sp"
         android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/profileImgView"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="alex" />
 
@@ -92,4 +98,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/descriptionTextView"
         tools:text="8 July 2020" />
+
+    <ImageView
+        android:id="@+id/profileImgView"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/instagram_user_filled_24" />
 </androidx.constraintlayout.widget.ConstraintLayout>

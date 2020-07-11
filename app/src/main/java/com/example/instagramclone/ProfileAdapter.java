@@ -2,22 +2,17 @@ package com.example.instagramclone;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.parse.LogOutCallback;
-import com.parse.ParseException;
 import com.parse.ParseFile;
-import com.parse.ParseUser;
 
 import org.parceler.Parcels;
 
@@ -76,7 +71,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         public void bind(final Post post) {
             // Bind the post's img to the view
             DateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy hh:mm");
-            final String strDate = dateFormat.format(post.getCreatedAt());
+            final String relativeDate = DateUtils.getRelativeTimeSpanString(post.getCreatedAt().getTime()) + "";
             final ParseFile image = post.getImage();
             if (image != null) {
                 Glide.with(context).load(image.getUrl()).into(imgView);
@@ -86,8 +81,8 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
                 public void onClick(View view) {
                     Intent intent = new Intent(context, PostDetailsActivity.class);
                     intent.putExtra("KEY_DESCRIPTION", post.getDescription());
-                    intent.putExtra("KEY_CREATED_KEY", strDate);
-                    intent.putExtra("KEY_USER", post.getUser().getUsername());
+                    intent.putExtra("KEY_CREATED_KEY", relativeDate);
+                    intent.putExtra("KEY_USER", Parcels.wrap(post.getUser()));
                     intent.putExtra("KEY_IMAGE", Parcels.wrap(image));
                     context.startActivity(intent);
                 }

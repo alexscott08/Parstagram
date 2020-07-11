@@ -8,23 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.instagramclone.EndlessRecyclerViewScrollListener;
 import com.example.instagramclone.LoginActivity;
 import com.example.instagramclone.Post;
-import com.example.instagramclone.PostsAdapter;
 import com.example.instagramclone.ProfileAdapter;
 import com.example.instagramclone.R;
 import com.parse.FindCallback;
@@ -37,17 +31,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static androidx.recyclerview.widget.StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS;
-
 public class ProfileFragment extends Fragment {
 
     public static final String TAG = "ProfileFragment";
     private RecyclerView postsRecyclerView;
     protected ProfileAdapter adapter;
     protected List<Post> allPosts;
-    private EndlessRecyclerViewScrollListener scrollListener;
     SwipeRefreshLayout swipeLayout;
-    private Date oldestPost;
     private Button logOutBtn;
 
 
@@ -74,22 +64,9 @@ public class ProfileFragment extends Fragment {
         postsRecyclerView.setAdapter(adapter);
         // set the layout manager on the recycler view
         StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-//        RecyclerView.ItemDecoration itemDecoration = new
-//                DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
-//        postsRecyclerView.addItemDecoration(itemDecoration);
         postsRecyclerView.setLayoutManager(gridLayoutManager);
         queryPosts();
-        // Retain an instance so that you can call `resetState()` for fresh searches
-//        scrollListener = new EndlessRecyclerViewScrollListener(gridLayoutManager) {
-//            @Override
-//            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-//                // Triggered only when new data needs to be appended to the list
-//                queryNewPosts();
-//            }
-//        };
-//        // Adds the scroll listener to RecyclerView
-//        postsRecyclerView.addOnScrollListener(scrollListener);
-//        // Getting SwipeContainerLayout
+        // Getting SwipeContainerLayout
         swipeLayout = view.findViewById(R.id.swipeContainer);
         // Adding Listener
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -125,6 +102,7 @@ public class ProfileFragment extends Fragment {
         // specify what type of data we want to query - Post.class
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         // include data referred by user key
+//        if (getIntent().getPar)
         query.include(Post.KEY_USER);
         query.whereEqualTo(Post.KEY_USER, ParseUser.getCurrentUser());
         // limit query to latest 20 items
@@ -147,44 +125,6 @@ public class ProfileFragment extends Fragment {
                 // save received posts to list and notify adapter of new data
                 adapter.clear();
                 adapter.addAll(posts);
-                if (adapter.getItemCount() > 0) {
-                    oldestPost = posts.get(posts.size() - 1).getCreatedAt();
-                }
-            }
-        });
-    }
-
-    // To append new data with endless scroll listener
-    protected void queryNewPosts() {
-        // specify what type of data we want to query - Post.class
-        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
-        // include data referred by user key
-        query.include(Post.KEY_USER);
-        // limit query to latest 20 items
-        query.setLimit(20);
-        // order posts by creation date and ensures only old posts not currently shown are added
-        query.whereEqualTo(Post.KEY_USER, ParseUser.getCurrentUser()).
-                whereGreaterThan("createdAt", oldestPost).orderByDescending(Post.KEY_CREATED_KEY);
-
-        // start an asynchronous call for posts
-        query.findInBackground(new FindCallback<Post>() {
-            @Override
-            public void done(List<Post> posts, ParseException e) {
-                // check for errors
-                if (e != null) {
-                    Log.e(TAG, "Issue with getting posts", e);
-                    return;
-                }
-                // for debugging purposes let's print every post description to logcat
-                for (Post post : posts) {
-                    Log.i(TAG, "Post: " + post.getDescription() + ", username: " + post.getUser().getUsername());
-                }
-                // update adapter with posts list
-                adapter.clear();
-                adapter.addAll(posts);
-                if (adapter.getItemCount() > 0) {
-                    oldestPost = posts.get(posts.size() - 1).getCreatedAt();
-                }
             }
         });
     }

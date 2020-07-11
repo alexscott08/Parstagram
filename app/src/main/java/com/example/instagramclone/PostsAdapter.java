@@ -1,9 +1,10 @@
 package com.example.instagramclone;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.example.instagramclone.fragments.ProfileFragment;
 import com.parse.ParseFile;
-import com.parse.ParseUser;
 
 import org.parceler.Parcels;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> {
@@ -69,8 +68,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         private ImageView imgView;
         private TextView descriptionTextView;
         private TextView timestampText;
-        private ImageButton heartImgBtn;
         private ImageView profileImgView;
+        private String relativeDate;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -78,22 +77,26 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             imgView = itemView.findViewById(R.id.imgView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
             timestampText = itemView.findViewById(R.id.timestampText);
-            heartImgBtn = itemView.findViewById(R.id.heartImgBtn);
             profileImgView = itemView.findViewById(R.id.profileImgView);
         }
 
         public void bind(final Post post) {
             // Bind the post data to the view elements
-            descriptionTextView.setText(post.getDescription());
+            // Bolds the username and concats description to string after
+            SpannableStringBuilder str = new SpannableStringBuilder(post.getUser().getUsername() +
+                    " " + post.getDescription());
+            str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0,
+                    post.getUser().getUsername().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            descriptionTextView.setText(str);
+
             usernameTextView.setText(post.getUser().getUsername());
-            DateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy hh:mm");
-            final String strDate = dateFormat.format(post.getCreatedAt());
-            timestampText.setText(strDate);
+            relativeDate = DateUtils.getRelativeTimeSpanString(post.getCreatedAt().getTime()) + "";
+            timestampText.setText(DateUtils.getRelativeTimeSpanString(post.getCreatedAt().getTime()));
             final ParseFile image = post.getImage();
             if (image != null) {
                 Glide.with(context).load(image.getUrl()).into(imgView);
             }
-            final ParseFile profilePic = ParseUser.getCurrentUser().getParseFile("profilePic");
+            final ParseFile profilePic = post.getUser().getParseFile("profilePic");
             if (profilePic != null) {
                 GlideApp.with(context)
                         .load(profilePic.getUrl())
@@ -110,20 +113,21 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                 public void onClick(View view) {
                     Intent intent = new Intent(context, PostDetailsActivity.class);
                     intent.putExtra("KEY_DESCRIPTION", post.getDescription());
-                    intent.putExtra("KEY_CREATED_KEY", strDate);
-                    intent.putExtra("KEY_USER", post.getUser().getUsername());
+                    intent.putExtra("KEY_CREATED_KEY", relativeDate);
+                    intent.putExtra("KEY_USER", Parcels.wrap(post.getUser()));
                     intent.putExtra("KEY_IMAGE", Parcels.wrap(image));
                     context.startActivity(intent);
                 }
             });
-//            heartImgBtn.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    heartImgBtn.setImageResource(R.drawable.ufi_heart_active);
-//                    final ParseObject likes = new ParseObject("likes");
-//                    final ParseUser user = ParseUser.getCurrentUser();
-//                    likes.put("likes", post);
-//                    likes.saveInBackground(new SaveCallba
+            usernameTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context, ProfileFragment.class);
+//                    intent.putExtra("KEY_USER", post.getUser());
+                    intent.putExtra("KEY_IMAGE", Parcels.wrap(image));
+                    context.startActivity(intent);
+                }
+            });
         }
     }
 }
