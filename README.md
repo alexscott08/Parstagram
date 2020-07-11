@@ -2,7 +2,7 @@
 
 **Parstagram** is a photo sharing app using Parse as its backend.
 
-Time spent: **32** hours spent in total
+Time spent: **33** hours spent in total
 
 ## User Stories
 
